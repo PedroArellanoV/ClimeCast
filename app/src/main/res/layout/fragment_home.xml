@@ -9,14 +9,13 @@
 
     <TextView
         android:id="@+id/tvNow"
+        style="@style/Title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:fontFamily="@font/roboto_bold"
         android:text="@string/now"
         android:textColor="@color/white_cream"
-        android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@id/cvUbiDetails"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -32,7 +31,62 @@
         app:cardCornerRadius="14dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvNow" />
+        app:layout_constraintTop_toBottomOf="@id/tvNow">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp">
+
+            <TextView
+                android:id="@+id/tvLocationTemp"
+                style="@style/Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toTopOf="@id/tvLocationName"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="20ºC" />
+
+            <TextView
+                android:id="@+id/tvLocationName"
+                style="@style/Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:text="Sagres, Algarve" />
+
+            <TextView
+                android:id="@+id/tvPrecipitationProb"
+                style="@style/Details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Precipitation 10%" />
+
+            <TextView
+                android:id="@+id/tvHumidity"
+                style="@style/Details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvPrecipitationProb"
+                tools:text="Humidity 90%" />
+
+            <TextView
+                android:id="@+id/tvWind"
+                style="@style/Details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/tvHumidity"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="Wind 19 km/h"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cv"
@@ -67,14 +121,14 @@
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cvForecast"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="8dp"
-        app:cardCornerRadius="14dp"
         android:elevation="12dp"
-        app:cardBackgroundColor="@color/secondary"/>
+        app:cardBackgroundColor="@color/secondary"
+        app:cardCornerRadius="14dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cvForecast" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
