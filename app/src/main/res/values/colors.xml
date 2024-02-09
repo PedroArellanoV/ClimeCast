@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+
+    <!-- Main Palette -->
+    <color name="main">#4586BF</color>
+    <color name="main_dark">#2E688C</color>
+    <color name="secondary">#AED3F2</color>
+    <color name="ocean_grey">#486773</color>
+    <color name="white_cream">#F2F2F2</color>
+    <color name="deep_blue">#00131F</color>
+    
+</resources>
