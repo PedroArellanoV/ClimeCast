@@ -52,15 +52,6 @@ class MainActivity : AppCompatActivity() {
 
             else -> {
                 showRequestFragment()
-                /*
-                requestPermissionLauncher =
-                    registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-                        if (isGranted) {
-                        } else {
-                        }
-                    }
-                requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
-                */
             }
         }
     }
