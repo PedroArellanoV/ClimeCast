@@ -14,13 +14,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import android.Manifest
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import com.example.climecast.ui.request.RequestFragment
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-    private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
+   // private lateinit var requestPermissionLauncher: ActivityResultLauncher<String>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +51,8 @@ class MainActivity : AppCompatActivity() {
             }
 
             else -> {
+                showRequestFragment()
+                /*
                 requestPermissionLauncher =
                     registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                         if (isGranted) {
@@ -57,8 +60,15 @@ class MainActivity : AppCompatActivity() {
                         }
                     }
                 requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION)
+                */
             }
         }
+    }
+
+    private fun showRequestFragment() {
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.requestFragmentContainer, RequestFragment())
+        fragmentTransaction.commit()
     }
 
     private fun initNavigation() {

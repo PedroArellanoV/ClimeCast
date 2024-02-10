@@ -6,6 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".ui.main.MainActivity">
 
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/requestFragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="20dp"/>
+
+
     <FrameLayout
         android:id="@+id/topBar"
         android:layout_width="0dp"
