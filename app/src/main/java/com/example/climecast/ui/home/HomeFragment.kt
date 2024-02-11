@@ -1,5 +1,6 @@
 package com.example.climecast.ui.home
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -37,8 +38,8 @@ class HomeFragment : Fragment() {
     private fun initUI() {
         homeViewModel.getLocation(requireContext())
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED){
-                homeViewModel.realtimeWeather.collect(){response ->
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                homeViewModel.realtimeWeather.collect() { response ->
                     realtimeWeatherCard(response)
                 }
             }
@@ -47,11 +48,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun realtimeWeatherCard(realtimeResponse: RealtimeWeatherModel?) {
-        binding.tvLocationName.text = realtimeResponse?.data?.locationData?.name.toString()
-        binding.tvLocationTemp.text = "${realtimeResponse?.data?.values?.temperature.toString()}ºC"
-        binding.tvHumidity.text = "Humidity ${realtimeResponse?.data?.values?.humidity?.toInt().toString()}%"
-        binding.tvWind.text = "Wind ${realtimeResponse?.data?.values?.windSpeed?.toInt().toString()}km/h"
-        binding.tvPrecipitationProb.text = "Precipitation ${realtimeResponse?.data?.values?.precipitationProb?.toInt().toString()}%"
+        binding.tvLocationName.text = homeViewModel.locationName.value
+        binding.tvLocationTemp.text =
+            "${realtimeResponse?.data?.values?.temperature?.toInt().toString()}ºC"
+        binding.tvHumidity.text =
+            "Humidity ${realtimeResponse?.data?.values?.humidity?.toInt().toString()}%"
+        binding.tvWind.text =
+            "Wind ${realtimeResponse?.data?.values?.windSpeed?.toInt().toString()}km/h"
+        binding.tvPrecipitationProb.text = "Precipitation ${
+            realtimeResponse?.data?.values?.precipitationProb?.toInt().toString()
+        }%"
     }
 
     override fun onCreateView(

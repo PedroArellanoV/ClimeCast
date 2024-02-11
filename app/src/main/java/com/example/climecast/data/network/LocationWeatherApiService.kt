@@ -7,7 +7,6 @@ import retrofit2.http.Query
 
 interface LocationWeatherApiService {
 
-    @Headers("accept: application/json")
     @GET("weather/realtime")
     suspend fun getLocationWeather(
         @Query("location") location: String,

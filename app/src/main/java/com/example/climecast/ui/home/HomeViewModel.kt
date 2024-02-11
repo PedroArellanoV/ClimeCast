@@ -3,6 +3,7 @@ package com.example.climecast.ui.home
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +32,9 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
     private var _realtimeWeather = MutableStateFlow<RealtimeWeatherModel?>(null)
     val realtimeWeather: StateFlow<RealtimeWeatherModel?> = _realtimeWeather
 
+    private var _locationName = MutableStateFlow("")
+    val locationName: StateFlow<String> = _locationName
+
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
 
@@ -41,10 +46,10 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
                 LocationServices.getFusedLocationProviderClient(context)
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
+                    getLocationName(context, location.latitude, location.longitude)
                     _locationData.value = LocationModel(location.latitude, location.longitude)
                     getLocationWeather(location.latitude, location.longitude)
                     Log.d("pedro_location", "${locationData.value}")
-                    Log.d("pedro_weatherdetails", "${realtimeWeather.value}")
                 } else {
 
                 }
@@ -57,8 +62,24 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
         }
     }
 
+    private fun getLocationName(context: Context, latitude: Double, longitude: Double){
+        val geocoder = Geocoder(context)
+        try {
+            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+            if (addresses != null) {
+                if (addresses.isNotEmpty()){
+                    val address = addresses[0]
+                    _locationName.value = "${address.locality}, ${address.countryName}"
+                }
+            }
+        }catch (e: IOException){
+            e.printStackTrace()
+        }
+    }
+
     private fun getLocationWeather(latitude: Double, longitude: Double) {
-        val location = "$latitude, $longitude"
+        val location: String = "$latitude, $longitude"
+        Log.d("location_pedro", "$location")
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
                 getRealtimeWeatherUseCase(
@@ -67,6 +88,7 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
             }
             if (result != null) {
                 _realtimeWeather.value = result
+                Log.d("pedro_weatherdetails", "${realtimeWeather.value}")
             } else {
             }
         }
