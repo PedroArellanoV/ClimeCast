@@ -2,14 +2,15 @@ package com.example.climecast.data.network
 
 import com.example.climecast.data.network.response.LocationWeatherResponse
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.Headers
+import retrofit2.http.Query
 
 interface LocationWeatherApiService {
 
-    @GET("/weather/realtime/{latitude}/{longitude}")
+    @Headers("accept: application/json")
+    @GET("weather/realtime")
     suspend fun getLocationWeather(
-        @Path("latitude") latitude: String,
-        @Path("longitude") longitude: String,
-        @Path("apiKey") apiKey: String
+        @Query("location") location: String,
+        @Query("apikey") apiKey: String
     ): LocationWeatherResponse?
 }

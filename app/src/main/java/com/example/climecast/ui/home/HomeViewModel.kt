@@ -11,7 +11,6 @@ import com.example.climecast.domain.model.LocationModel
 import com.example.climecast.domain.model.RealtimeWeatherModel
 import com.example.climecast.domain.usecase.GetRealtimeWeatherUseCase
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.coroutines.coroutineContext
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: GetRealtimeWeatherUseCase) :
@@ -44,8 +42,9 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
                 if (location != null) {
                     _locationData.value = LocationModel(location.latitude, location.longitude)
-                    getLocationWeather()
+                    getLocationWeather(location.latitude, location.longitude)
                     Log.d("pedro_location", "${locationData.value}")
+                    Log.d("pedro_weatherdetails", "${realtimeWeather.value}")
                 } else {
 
                 }
@@ -58,17 +57,18 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
         }
     }
 
-    private fun getLocationWeather() {
+    private fun getLocationWeather(latitude: Double, longitude: Double) {
+        val location = "$latitude, $longitude"
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
                 getRealtimeWeatherUseCase(
-                    locationData.value!!.latitude.toString(),
-                    locationData.value!!.longitude.toString()
+                    location
                 )
             }
-            if(result != null){
+            if (result != null) {
                 _realtimeWeather.value = result
-            }else{}
+            } else {
+            }
         }
     }
 }

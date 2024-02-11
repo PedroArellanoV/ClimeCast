@@ -47,8 +47,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun realtimeWeatherCard(realtimeResponse: RealtimeWeatherModel?) {
-        binding.tvLocationName.text = realtimeResponse?.data?.locationData?.name
-        binding.tvLocationTemp.text = realtimeResponse?.data?.values?.temperature.toString()
+        binding.tvLocationName.text = realtimeResponse?.data?.locationData?.name.toString()
+        binding.tvLocationTemp.text = "${realtimeResponse?.data?.values?.temperature.toString()}ºC"
+        binding.tvHumidity.text = "Humidity ${realtimeResponse?.data?.values?.humidity?.toInt().toString()}%"
+        binding.tvWind.text = "Wind ${realtimeResponse?.data?.values?.windSpeed?.toInt().toString()}km/h"
+        binding.tvPrecipitationProb.text = "Precipitation ${realtimeResponse?.data?.values?.precipitationProb?.toInt().toString()}%"
     }
 
     override fun onCreateView(

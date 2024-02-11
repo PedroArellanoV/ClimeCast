@@ -13,10 +13,9 @@ class RepositoryImpl @Inject constructor(private val apiService: LocationWeather
     private val apiKey = ""
 
     override suspend fun getRealtimeWeather(
-        latitude: String,
-        longitude: String
+        location: String
     ): RealtimeWeatherModel? {
-        runCatching { apiService.getLocationWeather(latitude, longitude, apiKey) }
+        runCatching { apiService.getLocationWeather(location, apiKey) }
             .onSuccess { return it?.toDomain() }
             .onFailure { Log.i("api_error", "${it.message}") }
         return null
