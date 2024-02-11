@@ -13,7 +13,7 @@
     <string name="saved_places">Saved Places</string>
 
     <!-- Request Fragment -->
-    <string name="request">Hello, welcome to ClimeCast. In order to continue navigating in the application, you need to enable location services.</string>
+    <string name="request">Hello, welcome to ClimeCast. To fully enjoy all the features that ClimeCast offers, please enable location services.</string>
     <string name="btn_request">Enable Location Services</string>
     <string name="presentation">ClimeCast is an open-source app developed by Pedro Arellano. The weather data is powered by Tomorrow.api. You can find the source code on GitHub at [enlace a GitHub] and contribute to its development. Thank you for using ClimeCast!</string>
 </resources>

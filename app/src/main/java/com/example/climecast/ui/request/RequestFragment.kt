@@ -42,8 +42,9 @@ class RequestFragment : Fragment() {
         requestPermissionLauncher =
             registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
                 if (isGranted) {
-                    onAcceptedLocationPermission()
+                    onClickedPermission()
                 } else {
+                    onClickedPermission()
                 }
             }
     }
@@ -54,7 +55,7 @@ class RequestFragment : Fragment() {
         }
     }
 
-    private fun onAcceptedLocationPermission(){
+    private fun onClickedPermission(){
         val fadeOutAnimation = AnimationUtils.loadAnimation(requireContext(), R.anim.fade_out_screen)
         view?.startAnimation(fadeOutAnimation)
         val fragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()

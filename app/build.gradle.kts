@@ -50,6 +50,9 @@ dependencies {
     val daggerHiltVersion = "2.48"
 
 
+    implementation("com.google.android.gms:play-services-location:21.1.0")
+
+
     //NavigationComponent
     implementation("androidx.navigation:navigation-fragment-ktx:$navVersion")
     implementation("androidx.navigation:navigation-ui-ktx:$navVersion")
