@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.climecast.domain.model.LocationModel
 import com.example.climecast.domain.model.RealtimeWeatherModel
 import com.example.climecast.domain.usecase.GetRealtimeWeatherUseCase
+import com.example.climecast.ui.utils.ServicesConfirmed
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -35,6 +36,9 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
     private var _locationName = MutableStateFlow("")
     val locationName: StateFlow<String> = _locationName
 
+    private var _serviceConfirmed = MutableStateFlow(ServicesConfirmed.LOADING)
+    val serviceConfirm: StateFlow<ServicesConfirmed> = _serviceConfirmed
+
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
 
@@ -42,6 +46,7 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION)
             == PackageManager.PERMISSION_GRANTED
         ) {
+
             fusedLocationProviderClient =
                 LocationServices.getFusedLocationProviderClient(context)
             fusedLocationProviderClient.lastLocation.addOnSuccessListener { location ->
@@ -50,36 +55,35 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
                     _locationData.value = LocationModel(location.latitude, location.longitude)
                     getLocationWeather(location.latitude, location.longitude)
                     Log.d("pedro_location", "${locationData.value}")
+                    _serviceConfirmed.value = ServicesConfirmed.CONFIRMED
                 } else {
-
                 }
-
             }.addOnFailureListener {
-
+                _serviceConfirmed.value = ServicesConfirmed.NOT_FOUND
             }
         } else {
-
+            _serviceConfirmed.value = ServicesConfirmed.REQUIRED
         }
     }
 
-    private fun getLocationName(context: Context, latitude: Double, longitude: Double){
+    private fun getLocationName(context: Context, latitude: Double, longitude: Double) {
         val geocoder = Geocoder(context)
         try {
             val addresses = geocoder.getFromLocation(latitude, longitude, 1)
             if (addresses != null) {
-                if (addresses.isNotEmpty()){
+                if (addresses.isNotEmpty()) {
                     val address = addresses[0]
                     _locationName.value = "${address.locality}, ${address.countryName}"
                 }
             }
-        }catch (e: IOException){
+        } catch (e: IOException) {
             e.printStackTrace()
         }
     }
 
     private fun getLocationWeather(latitude: Double, longitude: Double) {
-        val location: String = "$latitude, $longitude"
-        Log.d("location_pedro", "$location")
+        val location = "$latitude, $longitude"
+        Log.d("location_pedro", location)
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
                 getRealtimeWeatherUseCase(
@@ -90,7 +94,10 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
                 _realtimeWeather.value = result
                 Log.d("pedro_weatherdetails", "${realtimeWeather.value}")
             } else {
+
             }
         }
     }
+
 }
+

@@ -34,9 +34,49 @@
         app:layout_constraintTop_toBottomOf="@id/tvNow">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/requirePermissions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/ocean_grey"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/alertIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_information"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:backgroundTint="@color/white_cream"
+                app:layout_constraintBottom_toTopOf="@id/tvRequirePermissions"/>
+
+            <TextView
+                android:id="@+id/tvRequirePermissions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/require"
+                android:textColor="@color/white_cream"
+                android:fontFamily="@font/roboto_regular"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:padding="8dp">
+
+            <ProgressBar
+                android:id="@+id/pbWeather"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
 
             <TextView
                 android:id="@+id/tvLocationTemp"
@@ -56,6 +96,16 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 tools:text="Sagres, Algarve" />
+
+            <TextView
+                android:id="@+id/tvHour"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="20:00hs"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginHorizontal="8dp"
+                style="@style/Details"/>
 
             <TextView
                 android:id="@+id/tvPrecipitationProb"
@@ -88,35 +138,26 @@
 
     </androidx.cardview.widget.CardView>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cv"
-        android:layout_width="0dp"
-        android:layout_height="127dp"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginVertical="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
-        android:elevation="12dp"
-        app:cardBackgroundColor="@color/secondary"
-        app:cardCornerRadius="14dp"
-        app:layout_constraintEnd_toStartOf="@id/cvForecast"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cvUbiDetails" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvForecast"
         android:layout_width="0dp"
         android:layout_height="127dp"
-        android:layout_marginHorizontal="8dp"
+        android:layout_marginHorizontal="16dp"
         android:layout_marginVertical="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
         android:elevation="12dp"
         app:cardBackgroundColor="@color/secondary"
         app:cardCornerRadius="14dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/cv"
-        app:layout_constraintTop_toBottomOf="@+id/cvUbiDetails" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cvUbiDetails" >
+        
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvForecast"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        
+    </androidx.cardview.widget.CardView>
 
     <androidx.cardview.widget.CardView
         android:layout_width="0dp"

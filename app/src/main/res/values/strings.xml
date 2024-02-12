@@ -11,9 +11,14 @@
     <string name="now">Now</string>
     <string name="forecast">Forecast</string>
     <string name="saved_places">Saved Places</string>
+    <string name="require">Enable location to access this feature.</string>
 
     <!-- Request Fragment -->
     <string name="request">Hello, welcome to ClimeCast. To fully enjoy all the features that ClimeCast offers, please enable location services.</string>
     <string name="btn_request">Enable Location Services</string>
     <string name="presentation">ClimeCast is an open-source app developed by Pedro Arellano. The weather data is powered by Tomorrow.api. You can find the source code on GitHub at [enlace a GitHub] and contribute to its development. Thank you for using ClimeCast!</string>
+
+    <!-- Alert Dialog -->
+    <string name="alertTitle">Location Error</string>
+    <string name="alertDescription">Unable to retrieve location. Please make sure location services are enable</string>
 </resources>
