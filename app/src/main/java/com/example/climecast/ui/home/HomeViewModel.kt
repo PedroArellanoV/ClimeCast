@@ -8,8 +8,10 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.climecast.domain.model.ForecastResponseModel
 import com.example.climecast.domain.model.LocationModel
 import com.example.climecast.domain.model.RealtimeWeatherModel
+import com.example.climecast.domain.usecase.GetForecastUseCase
 import com.example.climecast.domain.usecase.GetRealtimeWeatherUseCase
 import com.example.climecast.ui.utils.ServicedConfirmed
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -24,7 +26,10 @@ import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: GetRealtimeWeatherUseCase) :
+class HomeViewModel @Inject constructor(
+    private val getRealtimeWeatherUseCase: GetRealtimeWeatherUseCase,
+    private val getForecastUseCase: GetForecastUseCase
+    ) :
     ViewModel() {
 
     private val _locationData = MutableStateFlow<LocationModel?>(null)
@@ -32,6 +37,9 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
 
     private var _realtimeWeather = MutableStateFlow<RealtimeWeatherModel?>(null)
     val realtimeWeather: StateFlow<RealtimeWeatherModel?> = _realtimeWeather
+
+    private var _forecast = MutableStateFlow<ForecastResponseModel?>(null)
+    val forecast: StateFlow<ForecastResponseModel?> = _forecast
 
     private var _locationName = MutableStateFlow("")
     val locationName: StateFlow<String> = _locationName
@@ -54,7 +62,9 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
                     getLocationName(context, location.latitude, location.longitude)
                     _locationData.value = LocationModel(location.latitude, location.longitude)
                     getLocationWeather(location.latitude, location.longitude)
+                    getForecast(location.latitude, location.longitude)
                     Log.d("pedro_location", "${locationData.value}")
+                    Log.d("pedro_forecast", "${forecast.value}")
                     _serviceConfirmed.value = ServicedConfirmed.CONFIRMED
                 } else {
                 }
@@ -86,14 +96,26 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
         Log.d("location_pedro", location)
         viewModelScope.launch {
             val result = withContext(Dispatchers.IO) {
-                getRealtimeWeatherUseCase(
-                    location
-                )
+                getRealtimeWeatherUseCase(location)
             }
             if (result != null) {
                 _realtimeWeather.value = result
                 Log.d("pedro_weatherdetails", "${realtimeWeather.value}")
             } else {
+
+            }
+        }
+    }
+
+    private fun getForecast(latitude: Double, longitude: Double){
+        val location = "$latitude, $longitude"
+        viewModelScope.launch {
+            val result = withContext(Dispatchers.IO){
+                getForecastUseCase(location, "1h")
+            }
+            if(result != null){
+                _forecast.value = result
+                Log.d("pedro_forecastdetails", "${forecast.value}")
 
             }
         }
