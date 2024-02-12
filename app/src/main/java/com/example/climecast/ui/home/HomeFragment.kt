@@ -14,9 +14,13 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.climecast.R
 import com.example.climecast.databinding.FragmentHomeBinding
 import com.example.climecast.domain.model.RealtimeWeatherModel
-import com.example.climecast.ui.utils.ServicesConfirmed
+import com.example.climecast.domain.model.Weather
+import com.example.climecast.ui.utils.ServicedConfirmed
+import com.example.climecast.ui.utils.WeatherState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.util.Calendar
+import java.util.TimeZone
 
 
 /*
@@ -54,26 +58,26 @@ class HomeFragment : Fragment() {
 
     private fun realtimeWeatherCard(
         realtimeResponse: RealtimeWeatherModel?,
-        serviceConfirm: ServicesConfirmed
+        serviceConfirm: ServicedConfirmed
     ) {
 
         when {
-            realtimeResponse != null && serviceConfirm == ServicesConfirmed.CONFIRMED -> {
+            realtimeResponse != null && serviceConfirm == ServicedConfirmed.CONFIRMED -> {
                 binding.pbWeather.isVisible = false
                 binding.tvLocationName.text = homeViewModel.locationName.value
                 binding.tvLocationTemp.text =
-                    "${realtimeResponse.data?.values?.temperature?.toInt().toString()}ºC"
+                    "${realtimeResponse.data?.values?.temperature?.toInt()}ºC"
                 binding.tvHumidity.text =
-                    "Humidity ${realtimeResponse.data?.values?.humidity?.toInt().toString()}%"
+                    "Humidity ${realtimeResponse.data?.values?.humidity?.toInt()}%"
                 binding.tvWind.text =
-                    "Wind ${realtimeResponse.data?.values?.windSpeed?.toInt().toString()}km/h"
+                    "Wind ${realtimeResponse.data?.values?.windSpeed?.toInt()}km/h"
                 binding.tvPrecipitationProb.text = "Precipitation ${
-                    realtimeResponse.data?.values?.precipitationProb?.toInt().toString()
+                    realtimeResponse.data?.values?.precipitationProb?.toInt()
                 }%"
-                binding.tvHour.text = realtimeResponse.data?.time.toString()
+                drawWeatherIcon(realtimeResponse)
             }
 
-            serviceConfirm == ServicesConfirmed.NOT_FOUND -> {
+            serviceConfirm == ServicedConfirmed.NOT_FOUND -> {
                 val dialog = AlertDialog.Builder(requireContext()).setTitle(R.string.alertTitle)
                     .setMessage(R.string.alertDescription)
                     .setPositiveButton("Ok") { dialog, _ ->
@@ -83,14 +87,41 @@ class HomeFragment : Fragment() {
                 dialog.show()
             }
 
-            serviceConfirm == ServicesConfirmed.REQUIRED -> {
+            serviceConfirm == ServicedConfirmed.REQUIRED -> {
                 binding.requirePermissions.isVisible = true
                 binding.pbWeather.isVisible = false
             }
 
-            serviceConfirm == ServicesConfirmed.LOADING -> {
+            serviceConfirm == ServicedConfirmed.LOADING -> {
                 binding.requirePermissions.isVisible = false
             }
+        }
+    }
+
+    private fun drawWeatherIcon(realtimeResponse: RealtimeWeatherModel) {
+
+        val calendar = Calendar.getInstance()
+        val timeZone = TimeZone.getDefault()
+        calendar.timeZone = timeZone
+        val localtime = calendar
+
+        val response = realtimeResponse.data?.values
+
+        binding.tvHour.text = "${localtime.time.hours}:00hs"
+
+        when{
+            response?.cloudCover!! <= 30 && response.rainIntensity <= 10 && response.snowIntensity <=10 && localtime.time.hours <= 19 -> binding.imgWeatherState.setImageResource(WeatherState.ClearDay.icon)
+            response.cloudCover <= 30 && response.rainIntensity <= 10 &&  response.snowIntensity <=10 && localtime.time.hours > 19 -> binding.imgWeatherState.setImageResource(WeatherState.ClearNight.icon)
+            response.cloudCover > 30 && response.rainIntensity <= 10 &&  response.snowIntensity <=10 -> binding.imgWeatherState.setImageResource(WeatherState.Cloudy.icon)
+            response.cloudCover <= 30 && response.rainIntensity >10 &&  response.snowIntensity <=10 && localtime.time.hours <=19 -> binding.imgWeatherState.setImageResource(WeatherState.SunnyRain.icon)
+            response.cloudCover<= 30 && response.rainIntensity >10 &&  response.snowIntensity <=10 && localtime.time.hours >19 -> binding.imgWeatherState.setImageResource(WeatherState.NightRain.icon)
+            response.cloudCover > 30 && response.rainIntensity > 10 &&  response.snowIntensity <=10 ->binding.imgWeatherState.setImageResource( WeatherState.Cloudy.icon)
+            response.cloudCover <= 30 && response.rainIntensity > 10 &&  response.snowIntensity <=10 && localtime.time.hours <=19 -> binding.imgWeatherState.setImageResource(WeatherState.SunnyRain.icon)
+            response.cloudCover <= 30 && response.rainIntensity >10 &&  response.snowIntensity <=10 && localtime.time.hours >19 -> binding.imgWeatherState.setImageResource(WeatherState.NightRain.icon)
+            response.cloudCover > 30 && response.rainIntensity > 10 &&  response.snowIntensity <=10 -> binding.imgWeatherState.setImageResource(WeatherState.CloudyRain.icon)
+            response.cloudCover <= 30 && response.rainIntensity <= 10 && response.snowIntensity >10 && localtime.time.hours <= 19 -> binding.imgWeatherState.setImageResource(WeatherState.SunnySnow.icon)
+            response.cloudCover <= 30 && response.rainIntensity <= 10 && response.snowIntensity >10 && localtime.time.hours > 19 -> binding.imgWeatherState.setImageResource(WeatherState.NightSnow.icon)
+            response.cloudCover > 30 && response.rainIntensity <= 10 &&  response.snowIntensity > 10 -> binding.imgWeatherState.setImageResource(WeatherState.CloudySnow.icon)
         }
     }
 

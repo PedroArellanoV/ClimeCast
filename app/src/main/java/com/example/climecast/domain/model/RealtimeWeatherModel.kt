@@ -5,19 +5,16 @@ data class RealtimeWeatherModel(
 )
 data class Data(
     val time: String?,
-    val values: Weather?,
-    val locationData: Location?
+    val values: Weather?
 )
 
 data class Weather(
-    val cloudBase: Double?,
-    val humidity: Double?,
-    val precipitationProb: Double?,
-    val temperature: Double?,
-    val temperatureApparent: Double?,
-    val windSpeed: Double?
-)
-
-data class Location(
-    val name: String?
+    val cloudCover: Double,
+    val humidity: Double,
+    val precipitationProb: Double,
+    val temperature: Double,
+    val temperatureApparent: Double,
+    val windSpeed: Double,
+    val rainIntensity: Double,
+    val snowIntensity: Double
 )

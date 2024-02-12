@@ -11,7 +11,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.climecast.domain.model.LocationModel
 import com.example.climecast.domain.model.RealtimeWeatherModel
 import com.example.climecast.domain.usecase.GetRealtimeWeatherUseCase
-import com.example.climecast.ui.utils.ServicesConfirmed
+import com.example.climecast.ui.utils.ServicedConfirmed
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -36,8 +36,8 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
     private var _locationName = MutableStateFlow("")
     val locationName: StateFlow<String> = _locationName
 
-    private var _serviceConfirmed = MutableStateFlow(ServicesConfirmed.LOADING)
-    val serviceConfirm: StateFlow<ServicesConfirmed> = _serviceConfirmed
+    private var _serviceConfirmed = MutableStateFlow(ServicedConfirmed.LOADING)
+    val serviceConfirm: StateFlow<ServicedConfirmed> = _serviceConfirmed
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -55,14 +55,14 @@ class HomeViewModel @Inject constructor(private val getRealtimeWeatherUseCase: G
                     _locationData.value = LocationModel(location.latitude, location.longitude)
                     getLocationWeather(location.latitude, location.longitude)
                     Log.d("pedro_location", "${locationData.value}")
-                    _serviceConfirmed.value = ServicesConfirmed.CONFIRMED
+                    _serviceConfirmed.value = ServicedConfirmed.CONFIRMED
                 } else {
                 }
             }.addOnFailureListener {
-                _serviceConfirmed.value = ServicesConfirmed.NOT_FOUND
+                _serviceConfirmed.value = ServicedConfirmed.NOT_FOUND
             }
         } else {
-            _serviceConfirmed.value = ServicesConfirmed.REQUIRED
+            _serviceConfirmed.value = ServicedConfirmed.REQUIRED
         }
     }
 

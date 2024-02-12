@@ -1,33 +1,30 @@
 package com.example.climecast.data.network.response
 
 import com.example.climecast.domain.model.Data
-import com.example.climecast.domain.model.Location
 import com.example.climecast.domain.model.RealtimeWeatherModel
 import com.example.climecast.domain.model.Weather
 import com.google.gson.annotations.SerializedName
 
 data class LocationWeatherResponse(
-    @SerializedName("data") val data : DataResponse?
+    @SerializedName("data") val data: DataResponse?
 )
 
 data class DataResponse(
     @SerializedName("time") val time: String?,
-    @SerializedName("values") val values: WeatherValues?,
-    @SerializedName("location") val locationData: LocationData?
+    @SerializedName("values") val values: WeatherValues?
 )
 
 data class WeatherValues(
-    @SerializedName("cloudBase") val cloudBase: Double?,
-    @SerializedName("humidity") val humidity: Double?,
-    @SerializedName("precipitationProbability") val precipitationProb: Double?,
-    @SerializedName("temperature") val temperature: Double?,
-    @SerializedName("temperatureApparent") val temperatureApparent: Double?,
-    @SerializedName("windSpeed") val windSpeed: Double?
+    @SerializedName("cloudCover") val cloudCover: Double,
+    @SerializedName("humidity") val humidity: Double,
+    @SerializedName("precipitationProbability") val precipitationProb: Double,
+    @SerializedName("temperature") val temperature: Double,
+    @SerializedName("temperatureApparent") val temperatureApparent: Double,
+    @SerializedName("windSpeed") val windSpeed: Double,
+    @SerializedName("rainIntensity") val rainIntensity: Double,
+    @SerializedName("snowIntensity") val snowIntensity: Double
 )
 
-data class LocationData(
-    @SerializedName("name") val name: String?
-)
 
 
 fun LocationWeatherResponse.toDomain(): RealtimeWeatherModel {
@@ -39,24 +36,19 @@ fun LocationWeatherResponse.toDomain(): RealtimeWeatherModel {
 fun DataResponse.toDomain(): Data {
     return Data(
         time,
-        values?.toDomain(),
-        locationData?.toDomain()
+        values?.toDomain()
     )
 }
 
 fun WeatherValues.toDomain(): Weather {
     return Weather(
-        cloudBase,
+        cloudCover,
         humidity,
         precipitationProb,
         temperature,
         temperatureApparent,
-        windSpeed
-    )
-}
-
-fun LocationData.toDomain(): Location {
-    return Location(
-        name
+        windSpeed,
+        rainIntensity,
+        snowIntensity
     )
 }
