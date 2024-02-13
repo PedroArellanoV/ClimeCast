@@ -2,10 +2,8 @@ package com.example.climecast.ui.utils
 
 import androidx.annotation.DrawableRes
 import com.example.climecast.R
-import java.util.Calendar
-import java.util.TimeZone
 
-enum class ServicedConfirmed {
+enum class ServiceConfirmed {
     CONFIRMED, REQUIRED, NOT_FOUND, LOADING
 }
 

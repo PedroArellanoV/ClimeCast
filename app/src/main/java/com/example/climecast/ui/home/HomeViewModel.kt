@@ -13,7 +13,7 @@ import com.example.climecast.domain.model.LocationModel
 import com.example.climecast.domain.model.RealtimeWeatherModel
 import com.example.climecast.domain.usecase.GetForecastUseCase
 import com.example.climecast.domain.usecase.GetRealtimeWeatherUseCase
-import com.example.climecast.ui.utils.ServicedConfirmed
+import com.example.climecast.ui.utils.ServiceConfirmed
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -44,8 +44,11 @@ class HomeViewModel @Inject constructor(
     private var _locationName = MutableStateFlow("")
     val locationName: StateFlow<String> = _locationName
 
-    private var _serviceConfirmed = MutableStateFlow(ServicedConfirmed.LOADING)
-    val serviceConfirm: StateFlow<ServicedConfirmed> = _serviceConfirmed
+    private var _serviceConfirmed = MutableStateFlow(ServiceConfirmed.LOADING)
+    val serviceConfirm: StateFlow<ServiceConfirmed> = _serviceConfirmed
+
+    private var _forecastConfirmed = MutableStateFlow(ServiceConfirmed.LOADING)
+    val forecastConfirmed: StateFlow<ServiceConfirmed> = _forecastConfirmed
 
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -65,14 +68,14 @@ class HomeViewModel @Inject constructor(
                     getForecast(location.latitude, location.longitude)
                     Log.d("pedro_location", "${locationData.value}")
                     Log.d("pedro_forecast", "${forecast.value}")
-                    _serviceConfirmed.value = ServicedConfirmed.CONFIRMED
                 } else {
                 }
             }.addOnFailureListener {
-                _serviceConfirmed.value = ServicedConfirmed.NOT_FOUND
+                _serviceConfirmed.value = ServiceConfirmed.NOT_FOUND
             }
         } else {
-            _serviceConfirmed.value = ServicedConfirmed.REQUIRED
+            _serviceConfirmed.value = ServiceConfirmed.REQUIRED
+            _forecastConfirmed.value = ServiceConfirmed.REQUIRED
         }
     }
 
@@ -99,6 +102,7 @@ class HomeViewModel @Inject constructor(
                 getRealtimeWeatherUseCase(location)
             }
             if (result != null) {
+                _serviceConfirmed.value = ServiceConfirmed.CONFIRMED
                 _realtimeWeather.value = result
                 Log.d("pedro_weatherdetails", "${realtimeWeather.value}")
             } else {
@@ -115,10 +119,10 @@ class HomeViewModel @Inject constructor(
                 getForecastUseCase(location, "1h")
             }
             if (result != null) {
+                _forecastConfirmed.value = ServiceConfirmed.CONFIRMED
                 _forecast.value = result.timelines.hourly.take(24)
                 Log.d("pedro_forecastdetails", "${forecast.value}")
-
-            }
+            }else _forecastConfirmed.value = ServiceConfirmed.NOT_FOUND
         }
     }
 

@@ -2,7 +2,6 @@ package com.example.climecast.ui.home
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,7 @@ import com.example.climecast.domain.model.HourlyResponseModel
 import com.example.climecast.domain.model.HourlyValuesModel
 import com.example.climecast.domain.model.RealtimeWeatherModel
 import com.example.climecast.ui.home.adapter.ForecastAdapter
-import com.example.climecast.ui.utils.ServicedConfirmed
+import com.example.climecast.ui.utils.ServiceConfirmed
 import com.example.climecast.ui.utils.WeatherState
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -61,11 +60,24 @@ class HomeFragment : Fragment() {
 
     private fun getForecastInfo() {
         lifecycleScope.launch {
-                homeViewModel.forecast.collect {response ->
-                    forecastAdapter.updateList(response.map { hourlyResponse ->
+            homeViewModel.forecast.collect {response ->
+                confirmForecastService()
+                forecastAdapter.updateList(response.map { hourlyResponse ->
                         mapToForecastModel(hourlyResponse)
                     })
                 }
+        }
+    }
+
+    private fun confirmForecastService() {
+        when(homeViewModel.forecastConfirmed.value) {
+            ServiceConfirmed.NOT_FOUND -> {}
+            ServiceConfirmed.CONFIRMED -> binding.pbForecast.isVisible = false
+            ServiceConfirmed.LOADING -> binding.pbForecast.isVisible = true
+            ServiceConfirmed.REQUIRED -> {
+                binding.pbForecast.isVisible = false
+                binding.forecastRequirePermissions.isVisible = true
+            }
         }
     }
 
@@ -81,11 +93,11 @@ class HomeFragment : Fragment() {
 
     private fun realtimeWeatherCard(
         realtimeResponse: RealtimeWeatherModel?,
-        serviceConfirm: ServicedConfirmed
+        serviceConfirm: ServiceConfirmed
     ) {
 
         when {
-            realtimeResponse != null && serviceConfirm == ServicedConfirmed.CONFIRMED -> {
+            realtimeResponse != null && serviceConfirm == ServiceConfirmed.CONFIRMED -> {
                 binding.pbWeather.isVisible = false
                 binding.tvLocationName.text = homeViewModel.locationName.value
                 binding.tvLocationTemp.text =
@@ -100,7 +112,7 @@ class HomeFragment : Fragment() {
                 drawWeatherIcon(realtimeResponse)
             }
 
-            serviceConfirm == ServicedConfirmed.NOT_FOUND -> {
+            serviceConfirm == ServiceConfirmed.NOT_FOUND -> {
                 val dialog = AlertDialog.Builder(requireContext()).setTitle(R.string.alertTitle)
                     .setMessage(R.string.alertDescription)
                     .setPositiveButton("Ok") { dialog, _ ->
@@ -110,12 +122,12 @@ class HomeFragment : Fragment() {
                 dialog.show()
             }
 
-            serviceConfirm == ServicedConfirmed.REQUIRED -> {
+            serviceConfirm == ServiceConfirmed.REQUIRED -> {
                 binding.requirePermissions.isVisible = true
                 binding.pbWeather.isVisible = false
             }
 
-            serviceConfirm == ServicedConfirmed.LOADING -> {
+            serviceConfirm == ServiceConfirmed.LOADING -> {
                 binding.requirePermissions.isVisible = false
             }
         }

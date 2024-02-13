@@ -169,6 +169,32 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cvUbiDetails" >
+
+        <ProgressBar
+            android:id="@+id/pbForecast"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/forecastRequirePermissions"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/ocean_grey"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/forecastAlertIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_information"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:backgroundTint="@color/white_cream"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
         
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvForecast"
