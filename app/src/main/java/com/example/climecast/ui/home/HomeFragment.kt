@@ -2,6 +2,7 @@ package com.example.climecast.ui.home
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,18 +16,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.climecast.R
 import com.example.climecast.databinding.FragmentHomeBinding
 import com.example.climecast.domain.model.ForecastPreviewModel
-import com.example.climecast.domain.model.ForecastResponseModel
 import com.example.climecast.domain.model.HourlyResponseModel
 import com.example.climecast.domain.model.HourlyValuesModel
 import com.example.climecast.domain.model.RealtimeWeatherModel
-import com.example.climecast.domain.model.Weather
 import com.example.climecast.ui.home.adapter.ForecastAdapter
 import com.example.climecast.ui.utils.ServicedConfirmed
 import com.example.climecast.ui.utils.WeatherState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
-import java.sql.Time
+import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.TimeZone
 
@@ -55,17 +53,30 @@ class HomeFragment : Fragment() {
 
     private fun initUI() {
         homeViewModel.getLocation(requireContext())
+        drawForecast(emptyList())
+        getRealtimeWeather()
+        getForecastInfo()
+
+    }
+
+    private fun getForecastInfo() {
+        lifecycleScope.launch {
+                homeViewModel.forecast.collect {response ->
+                    forecastAdapter.updateList(response.map { hourlyResponse ->
+                        mapToForecastModel(hourlyResponse)
+                    })
+                }
+        }
+    }
+
+    private fun getRealtimeWeather(){
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 homeViewModel.realtimeWeather.collect() { response ->
                     realtimeWeatherCard(response, homeViewModel.serviceConfirm.value)
                 }
-                homeViewModel.forecast.collect() { response ->
-                    drawForecast(response)
-                }
             }
         }
-
     }
 
     private fun realtimeWeatherCard(
@@ -172,12 +183,12 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun drawForecast(forecastResponse: ForecastResponseModel?) {
-        val forecastPreviewList = forecastResponse?.timelines?.hourly?.map { hourlyResponse ->
+    private fun drawForecast(forecastList: List<HourlyResponseModel>) {
+        val forecastPreviewList = forecastList.map { hourlyResponse ->
             mapToForecastModel(hourlyResponse)
         }
 
-        forecastAdapter = ForecastAdapter(forecastPreviewList!!)
+        forecastAdapter = ForecastAdapter(forecastPreviewList)
         binding.rvForecast.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = forecastAdapter
@@ -188,23 +199,32 @@ class HomeFragment : Fragment() {
         val weatherState = determineWeatherState(hourlyResponse.values)
         return ForecastPreviewModel(
             temperature = hourlyResponse.values.temperature.toInt(),
-            hour = hourlyResponse.time,
+            hour = transformDate(hourlyResponse.time),
             weatherState = weatherState
         )
     }
 
     private fun determineWeatherState(values: HourlyValuesModel): Int {
         return when {
-            values.cloudCover <= 30 && values.rainIntensity <= 10 && values.snowIntensity <= 10 -> return WeatherState.ClearDay.icon
-            values.cloudCover > 30 && values.rainIntensity <= 10 && values.snowIntensity <= 10 -> return WeatherState.Cloudy.icon
-            values.cloudCover <= 30 && values.rainIntensity > 10 && values.snowIntensity <= 10 -> return WeatherState.SunnyRain.icon
-            values.cloudCover > 30 && values.rainIntensity > 10 && values.snowIntensity <= 10 -> return WeatherState.Cloudy.icon
-            values.cloudCover <= 30 && values.rainIntensity > 10 && values.snowIntensity <= 10 -> return WeatherState.SunnyRain.icon
-            values.cloudCover > 30 && values.rainIntensity > 10 && values.snowIntensity <= 10 -> return WeatherState.CloudyRain.icon
-            values.cloudCover <= 30 && values.rainIntensity <= 10 && values.snowIntensity > 10 -> return WeatherState.SunnySnow.icon
-            values.cloudCover > 30 && values.rainIntensity <= 10 && values.snowIntensity > 10 -> return WeatherState.CloudySnow.icon
-            else -> {return WeatherState.ClearDay.icon}
+            values.cloudCover <= 30 && values.rainIntensity <= 10 && values.snowIntensity <= 10 -> WeatherState.ClearDay.icon
+            values.cloudCover > 30 && values.rainIntensity <= 10 && values.snowIntensity <= 10 -> WeatherState.Cloudy.icon
+            values.cloudCover <= 30 && values.rainIntensity > 10 && values.snowIntensity <= 10 -> WeatherState.SunnyRain.icon
+            values.cloudCover > 30 && values.rainIntensity > 10 && values.snowIntensity <= 10 -> WeatherState.Cloudy.icon
+            values.cloudCover <= 30 && values.rainIntensity > 10 && values.snowIntensity <= 10 -> WeatherState.SunnyRain.icon
+            values.cloudCover > 30 && values.rainIntensity > 10 && values.snowIntensity <= 10 -> WeatherState.CloudyRain.icon
+            values.cloudCover <= 30 && values.rainIntensity <= 10 && values.snowIntensity > 10 -> WeatherState.SunnySnow.icon
+            values.cloudCover > 30 && values.rainIntensity <= 10 && values.snowIntensity > 10 -> WeatherState.CloudySnow.icon
+            else -> {
+                return WeatherState.ClearDay.icon
+            }
         }
+    }
+
+    fun transformDate(dateText: String): String {
+        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        val date = sdf.parse(dateText)
+        return SimpleDateFormat("HH:mm").format(date)
     }
 
     override fun onCreateView(

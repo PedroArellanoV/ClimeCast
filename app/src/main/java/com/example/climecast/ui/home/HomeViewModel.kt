@@ -8,7 +8,7 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.climecast.domain.model.ForecastResponseModel
+import com.example.climecast.domain.model.HourlyResponseModel
 import com.example.climecast.domain.model.LocationModel
 import com.example.climecast.domain.model.RealtimeWeatherModel
 import com.example.climecast.domain.usecase.GetForecastUseCase
@@ -29,7 +29,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val getRealtimeWeatherUseCase: GetRealtimeWeatherUseCase,
     private val getForecastUseCase: GetForecastUseCase
-    ) :
+) :
     ViewModel() {
 
     private val _locationData = MutableStateFlow<LocationModel?>(null)
@@ -38,8 +38,8 @@ class HomeViewModel @Inject constructor(
     private var _realtimeWeather = MutableStateFlow<RealtimeWeatherModel?>(null)
     val realtimeWeather: StateFlow<RealtimeWeatherModel?> = _realtimeWeather
 
-    private var _forecast = MutableStateFlow<ForecastResponseModel?>(null)
-    val forecast: StateFlow<ForecastResponseModel?> = _forecast
+    private var _forecast = MutableStateFlow<List<HourlyResponseModel>>(emptyList())
+    val forecast: StateFlow<List<HourlyResponseModel>> = _forecast
 
     private var _locationName = MutableStateFlow("")
     val locationName: StateFlow<String> = _locationName
@@ -107,14 +107,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun getForecast(latitude: Double, longitude: Double){
+    private fun getForecast(latitude: Double, longitude: Double) {
         val location = "$latitude, $longitude"
+        Log.d("revice_location", location)
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO){
+            val result = withContext(Dispatchers.IO) {
                 getForecastUseCase(location, "1h")
             }
-            if(result != null){
-                _forecast.value = result
+            if (result != null) {
+                _forecast.value = result.timelines.hourly.take(24)
                 Log.d("pedro_forecastdetails", "${forecast.value}")
 
             }

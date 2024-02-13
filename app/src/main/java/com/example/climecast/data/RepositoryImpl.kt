@@ -23,7 +23,7 @@ class RepositoryImpl @Inject constructor(private val apiService: LocationWeather
     }
 
     override suspend fun getWeatherForecast(location: String, timesteps: String): ForecastResponseModel? {
-        runCatching { apiService.getForecast(location, apiKey, timesteps) }
+        runCatching { apiService.getForecast(location, timesteps, apiKey) }
             .onSuccess { return it.toDomain() }
             .onFailure { Log.i("api_error", "${it.message}") }
         return null
